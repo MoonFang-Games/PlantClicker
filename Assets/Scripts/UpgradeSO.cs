@@ -10,26 +10,28 @@ public class UpgradeSO : ScriptableObject
     /// ulepszenie tego konketnego ScriptableObject
     /// </summary>
     [SerializeField]
-    private Upgrade upgrade;
+    public Upgrade data;
+
+    // TODO: unique id
 
     void OnValidate()
     {
-        if (upgrade == null)
+        if (data == null)
             return;
-        if (upgrade.Cost < 0)
+        if (data.Cost < 0)
         {
             throw new System.ArgumentException(
-                $"{upgrade.title}: Cannot set upgrade cost to negative value"
+                $"{data.title}: Cannot set upgrade cost to negative value"
             );
         }
-        if (upgrade.modifier == null)
+        if (data.modifier == null)
         {
-            throw new System.ArgumentException($"{upgrade.title}: Upgrade modifier cannot be null");
+            throw new System.ArgumentException($"{data.title}: Upgrade modifier cannot be null");
         }
-        if (upgrade.modifier.Amount <= 0)
+        if (data.modifier.Amount <= 0)
         {
             throw new System.ArgumentException(
-                $"{upgrade.title}: Modifier amount cannot be negative or zero"
+                $"{data.title}: Modifier amount cannot be negative or zero"
             );
         }
     }
