@@ -1,6 +1,11 @@
 using System.Collections.Generic;
+using System.Xml;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
+/// <summary>
+/// Steruje listą ulepszeń, kupionych i do kupienia, i kupowaniem ulepszeń
+/// </summary>
 public class UpgradesManager : MonoBehaviour
 {
     /// <summary>
@@ -10,6 +15,11 @@ public class UpgradesManager : MonoBehaviour
     public List<UpgradeSO> boughtUpgrades = new();
     public Transform shopUpgradesContainer;
     public GameObject shopUpgradeElementPrefab;
+
+    float BASE_CLICK_VALUE = 1;
+    float BASE_PASSIVE_INCOME = 0;
+    float BASE_CLICK_BOOST_CHANCE = 0;
+    float BASE_CLICK_BOOST_MULTIPLIER = 2;
 
     void Start()
     {
@@ -47,7 +57,8 @@ public class UpgradesManager : MonoBehaviour
             return;
         }
         controller.data = element.upgrade.data;
-        controller.PrepareButton();
+        controller.upgradesManager = this;
+        controller.PrepareButton(element.upgrade.UniqueID);
     }
 
     /// <summary>
@@ -65,6 +76,10 @@ public class UpgradesManager : MonoBehaviour
 
         foundUpgrade.isBought = true;
         boughtUpgrades.Add(foundUpgrade.upgrade);
+
+        Debug.Log(
+            $"ClickValue: {CalculateUpgradesValue(ModifierType.IncreaseClickValue, BASE_CLICK_VALUE)}"
+        );
         return true;
     }
 
@@ -81,6 +96,24 @@ public class UpgradesManager : MonoBehaviour
                 return element;
         }
         return null;
+    }
+
+    /// <summary>
+    /// Liczy działanie ulepszeń
+    /// </summary>
+    /// <param name="modifierType">parametr do sprawdzenia</param>
+    /// <param name="baseValue">wartość podstawowa, np. dla kliknięcia (ClickValue) jest to 1</param>
+    /// <returns></returns>
+    public float CalculateUpgradesValue(ModifierType modifierType, float baseValue = 0)
+    {
+        float result = baseValue;
+        foreach (UpgradeSO upgrade in boughtUpgrades)
+        {
+            Upgrade data = upgrade.data;
+            if (data.modifier.ModifierType == modifierType)
+                result += data.modifier.Amount;
+        }
+        return result;
     }
 }
 

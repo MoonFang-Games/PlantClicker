@@ -333,9 +333,10 @@ MonoBehaviour:
     modifier:
       modifierType: 0
       amount: 0
-  title: {fileID: 1839844133973100137}
-  description: {fileID: 6245121510636094301}
-  cost: {fileID: 2261284071590525376}
+  titleText: {fileID: 1839844133973100137}
+  descriptionText: {fileID: 6245121510636094301}
+  costText: {fileID: 2261284071590525376}
+  upgradesManager: {fileID: 0}
 --- !u!1 &6976647909528199116
 GameObject:
   m_ObjectHideFlags: 0
@@ -456,7 +457,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1626216968773209624}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4703503016299318955}
+        m_TargetAssemblyTypeName: UpgradeController, Assembly-CSharp
+        m_MethodName: BuyThisUpgrade
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8504356074330856260
 GameObject:
   m_ObjectHideFlags: 0

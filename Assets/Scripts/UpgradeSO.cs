@@ -3,6 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Ten skrypt odpowiada za przechowywanie informacji o wszystkich dostępnych ulepszeniach, mechanizmach ich działania oraz funkcjach umożliwiających zakup ulepszeń.
+/// Pojedyncze ulepszenie.
 /// </summary>
 [CreateAssetMenu(fileName = "Upgrade", menuName = "Game/Upgrade")]
 public class UpgradeSO : ScriptableObject
@@ -13,38 +14,40 @@ public class UpgradeSO : ScriptableObject
     public Upgrade data;
 
     /// <summary>
-    /// Unikalny identyfikator
+    /// unikalny identyfikator ScriptableObject - taki sam jak data
     /// </summary>
     [SerializeField]
-    string uniqueID;
+    private string uniqueID;
 
     /// <summary>
-    /// Getter unikalnego identyfikatora
+    /// getter unikalnego identyfikatora
     /// </summary>
     public string UniqueID => uniqueID;
 
 #if UNITY_EDITOR
     void OnValidate()
     {
-        if (string.IsNullOrEmpty(uniqueID))
+        if (string.IsNullOrEmpty(UniqueID))
         {
             uniqueID = Guid.NewGuid().ToString();
-            UnityEditor.EditorUtility.SetDirty(this);
         }
 
         // walidacja danych
         if (data == null)
             return;
+
         if (data.Cost < 0)
         {
             throw new System.ArgumentException(
                 $"{data.title}: Cannot set upgrade cost to negative value"
             );
         }
+
         if (data.modifier == null)
         {
             throw new System.ArgumentException($"{data.title}: Upgrade modifier cannot be null");
         }
+
         if (data.modifier.Amount <= 0)
         {
             throw new System.ArgumentException(
@@ -96,10 +99,17 @@ public class Upgrade
 /// </summary>
 public enum ModifierType
 {
+    /// <summary> Wartość kliknięcia </summary>
     IncreaseClickValue,
+
+    /// <summary> Waluta na sekundę </summary>
     IncreasePassiveIncome,
+
+    /// <summary> Szansa na to, że kliknięcie da więcej waluty (ulepszone kliknięcie) </summary>
     IncreaseClickBoostChance,
-    IncreaseClickBoostValue,
+
+    /// <summary> Siła działania ulepszonego kliknięcia, np. daje 3 razy więcej </summary>
+    IncreaseClickBoostMultiplier,
 }
 
 /// <summary>
@@ -112,7 +122,8 @@ public class Modifier
     /// Enumerator - co robi modyfikator
     /// </summary>
     [SerializeField]
-    ModifierType modifierType;
+    private ModifierType modifierType;
+    public ModifierType ModifierType => modifierType;
 
     /// <summary>
     /// Z jaką wartością działa modyfikator
