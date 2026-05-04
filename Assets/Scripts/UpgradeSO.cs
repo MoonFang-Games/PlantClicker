@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -9,13 +10,29 @@ public class UpgradeSO : ScriptableObject
     /// <summary>
     /// ulepszenie tego konketnego ScriptableObject
     /// </summary>
-    [SerializeField]
     public Upgrade data;
 
-    // TODO: unique id
+    /// <summary>
+    /// Unikalny identyfikator
+    /// </summary>
+    [SerializeField]
+    string uniqueID;
 
+    /// <summary>
+    /// Getter unikalnego identyfikatora
+    /// </summary>
+    public string UniqueID => uniqueID;
+
+#if UNITY_EDITOR
     void OnValidate()
     {
+        if (string.IsNullOrEmpty(uniqueID))
+        {
+            uniqueID = Guid.NewGuid().ToString();
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+
+        // walidacja danych
         if (data == null)
             return;
         if (data.Cost < 0)
@@ -35,6 +52,7 @@ public class UpgradeSO : ScriptableObject
             );
         }
     }
+#endif
 }
 
 /// <summary>

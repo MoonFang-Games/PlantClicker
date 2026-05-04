@@ -53,14 +53,14 @@ public class UpgradesManager : MonoBehaviour
     /// <summary>
     /// Kupuje ulepszenie na podstawie niepowtarzalnego identyfikatora oraz ceny
     /// </summary>
-    /// <param name="title">Niepowtarzalny identyfikator ulepszenia</param>
+    /// <param name="identifier">Niepowtarzalny identyfikator ulepszenia</param>
     /// <returns>bool - czy udało się kupić?</returns>
-    public bool BuyUpgrade(string title)
+    public bool BuyUpgrade(string identifier)
     {
-        UpgradeEntry foundUpgrade = FindUpgradeSO(title);
-        if (foundUpgrade.upgrade == null)
+        UpgradeEntry foundUpgrade = FindUpgradeSO(identifier);
+        if (foundUpgrade == null)
             return false;
-        if (foundUpgrade.isBought == true)
+        if (foundUpgrade.isBought)
             return false;
 
         foundUpgrade.isBought = true;
@@ -71,15 +71,13 @@ public class UpgradesManager : MonoBehaviour
     /// <summary>
     /// Szuka ulepszenia w liście ScriptableObjects ulepszeń
     /// </summary>
-    /// <param name="title">Niepowtarzalny identyfikator ulepszenia</param>
+    /// <param name="identifier">Niepowtarzalny identyfikator ulepszenia</param>
     /// <returns>UpgradeEntry - ScriptableObject i bool isBought</returns>
-    public UpgradeEntry FindUpgradeSO(string title)
+    public UpgradeEntry FindUpgradeSO(string identifier)
     {
-        if (upgrades.Count == 0)
-            return null;
         foreach (var element in upgrades)
         {
-            if (element.upgrade.data.title == title)
+            if (element.upgrade.UniqueID == identifier)
                 return element;
         }
         return null;
