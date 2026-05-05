@@ -80,7 +80,7 @@ public class Upgrade
     /// Koszt ulepszenia wyrażony w podstawowej walucie
     /// </summary>
     [SerializeField]
-    int cost;
+    private int cost;
 
     /// <summary>
     /// getter kosztu ulepszenia

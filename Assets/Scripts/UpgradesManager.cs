@@ -16,6 +16,9 @@ public class UpgradesManager : MonoBehaviour
     public Transform shopUpgradesContainer;
     public GameObject shopUpgradeElementPrefab;
 
+    // TEMP
+    public int currency = 0;
+
     float BASE_CLICK_VALUE = 1;
     float BASE_PASSIVE_INCOME = 0;
     float BASE_CLICK_BOOST_CHANCE = 0;
@@ -73,8 +76,11 @@ public class UpgradesManager : MonoBehaviour
             return false;
         if (foundUpgrade.isBought)
             return false;
+        if (foundUpgrade.upgrade.data.Cost > currency)
+            return false;
 
         foundUpgrade.isBought = true;
+        currency -= foundUpgrade.upgrade.data.Cost;
         boughtUpgrades.Add(foundUpgrade.upgrade);
 
         Debug.Log(
