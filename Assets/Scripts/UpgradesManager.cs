@@ -16,6 +16,12 @@ public class UpgradesManager : MonoBehaviour
     public Transform shopUpgradesContainer;
     public GameObject shopUpgradeElementPrefab;
 
+    /// <summary>
+    /// Wywoływany po zakupie jakiegoś ulepszenia
+    /// <string> - unikalny identyfikator
+    /// </summary>
+    public event System.Action<string> OnUpgradeBought;
+
     // TEMP
     public int currency = 0;
 
@@ -86,6 +92,8 @@ public class UpgradesManager : MonoBehaviour
         Debug.Log(
             $"ClickValue: {CalculateUpgradesValue(ModifierType.IncreaseClickValue, BASE_CLICK_VALUE)}"
         );
+
+        OnUpgradeBought?.Invoke(identifier);
         return true;
     }
 
