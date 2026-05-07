@@ -7,22 +7,58 @@ using UnityEngine;
 /// </summary>
 public class Clicker : MonoBehaviour
 {
+    [SerializeField]
     private int leavesAmount = 0;
     public int LeavesAmount => leavesAmount;
     private int clicksAmount = 0;
     public int ClicksAmount => clicksAmount;
-    public int clickBoosValue = 100;
-    public float clickBoostChange = 0.01f;
     public event Action OnClick;
 
     public UpgradesManager upgradesManager;
+    private int clickValue = 1;
+    private float clickBoostChance = 0;
+    private float clickBoostMultiplier = 2;
 
     void Start()
     {
         if (upgradesManager == null)
         {
             Debug.LogError("UpgradesManager is not set");
+            return;
         }
+        GetUpgrades();
+    }
+
+    void OnEnable()
+    {
+        upgradesManager.OnUpgradeBought += GetUpgrades;
+    }
+
+    void OnDisable()
+    {
+        upgradesManager.OnUpgradeBought -= GetUpgrades;
+    }
+
+    void GetUpgrades(string UniqueID = "")
+    {
+        clickValue = (int)
+            Math.Ceiling(
+                upgradesManager.CalculateUpgradesValue(
+                    ModifierType.IncreaseClickValue,
+                    UpgradesManager.BASE_CLICK_VALUE
+                )
+            );
+        clickBoostChance = upgradesManager.CalculateUpgradesValue(
+            ModifierType.IncreaseClickBoostChance,
+            UpgradesManager.BASE_CLICK_BOOST_CHANCE
+        );
+        clickBoostMultiplier = upgradesManager.CalculateUpgradesValue(
+            ModifierType.IncreaseClickBoostMultiplier,
+            UpgradesManager.BASE_CLICK_BOOST_MULTIPLIER
+        );
+        Debug.Log(
+            $"Obliczono ulepszenia: clickValue:{clickValue}, clickBoostChance:{clickBoostChance}, clickBoostMultiplier:{clickBoostMultiplier}"
+        );
     }
 
     /// <summary>
@@ -38,18 +74,28 @@ public class Clicker : MonoBehaviour
             return;
         }
 
-        if (UnityEngine.Random.Range(0f, 1f) < clickBoostChange)
+        if (UnityEngine.Random.Range(0f, 1f) < clickBoostChance)
         {
-            leavesAmount += clickBoosValue;
+            leavesAmount = (int)Math.Ceiling(clickValue * clickBoostMultiplier);
+            Debug.Log("Boosted");
         }
         else
         {
-            leavesAmount++;
+            leavesAmount += clickValue;
         }
         clicksAmount++;
         Debug.Log(
-            $"Liczba listków: {leavesAmount}, Liczba kliknięć: {clicksAmount}, Szanse na zdobycie Boosta(+100): {clickBoostChange}"
+            $"Liczba listków: {leavesAmount}, Liczba kliknięć: {clicksAmount}, Szanse na zdobycie Boosta: {clickBoostChance}, Mnożnik Boosta: {clickBoostMultiplier}"
         );
         OnClick?.Invoke();
+    }
+
+    public bool SpendCurrency(int amount)
+    {
+        if (leavesAmount < amount)
+            return false;
+
+        leavesAmount -= amount;
+        return true;
     }
 }
