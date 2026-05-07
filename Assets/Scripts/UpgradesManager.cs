@@ -8,9 +8,6 @@ using UnityEngine;
 /// </summary>
 public class UpgradesManager : MonoBehaviour
 {
-    /// <summary>
-    /// <Upgrade, isbought>
-    /// </summary>
     public List<UpgradeEntry> upgrades = new();
     public List<UpgradeSO> boughtUpgrades = new();
     public Transform shopUpgradesContainer;
@@ -22,13 +19,12 @@ public class UpgradesManager : MonoBehaviour
     /// </summary>
     public event System.Action<string> OnUpgradeBought;
 
-    // TEMP
-    public int currency = 0;
+    public Clicker clickerManager;
 
-    float BASE_CLICK_VALUE = 1;
-    float BASE_PASSIVE_INCOME = 0;
-    float BASE_CLICK_BOOST_CHANCE = 0;
-    float BASE_CLICK_BOOST_MULTIPLIER = 2;
+    public const float BASE_CLICK_VALUE = 1;
+    public const float BASE_PASSIVE_INCOME = 0;
+    public const float BASE_CLICK_BOOST_CHANCE = 0;
+    public const float BASE_CLICK_BOOST_MULTIPLIER = 2;
 
     void Start()
     {
@@ -36,6 +32,7 @@ public class UpgradesManager : MonoBehaviour
             shopUpgradesContainer == null
             || upgrades.Count == 0
             || shopUpgradeElementPrefab == null
+            || clickerManager == null
         )
         {
             Debug.LogError("Objects are not set in UpgradesManager");
@@ -82,11 +79,10 @@ public class UpgradesManager : MonoBehaviour
             return false;
         if (foundUpgrade.isBought)
             return false;
-        if (foundUpgrade.upgrade.data.Cost > currency)
+        if (!clickerManager.SpendCurrency(foundUpgrade.upgrade.data.Cost))
             return false;
 
         foundUpgrade.isBought = true;
-        currency -= foundUpgrade.upgrade.data.Cost;
         boughtUpgrades.Add(foundUpgrade.upgrade);
 
         Debug.Log(
