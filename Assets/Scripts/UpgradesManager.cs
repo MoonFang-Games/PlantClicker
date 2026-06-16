@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Xml;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 /// <summary>
@@ -8,8 +6,17 @@ using UnityEngine;
 /// </summary>
 public class UpgradesManager : MonoBehaviour
 {
-    public List<UpgradeEntry> upgrades = new();
-    public List<UpgradeSO> boughtUpgrades = new();
+    // public List<UpgradeSO> boughtUpgrades = new();
+
+    /// <summary>
+    /// key = które ulepszenie, value = poziom ulepszenia (0 - brak)
+    /// </summary>
+    public List<UpgradeEntry> upgradesList = new();
+
+    /// <summary>
+    /// maksymalny poziom ulepszenia, domyślnie 10
+    /// </summary>
+    const int MAX_UPGRADE_LEVEL = 10;
     public Transform shopUpgradesContainer;
     public GameObject shopUpgradeElementPrefab;
 
@@ -30,7 +37,6 @@ public class UpgradesManager : MonoBehaviour
     {
         if (
             shopUpgradesContainer == null
-            || upgrades.Count == 0
             || shopUpgradeElementPrefab == null
             || clickerManager == null
         )
@@ -38,7 +44,7 @@ public class UpgradesManager : MonoBehaviour
             Debug.LogError("Objects are not set in UpgradesManager");
             return;
         }
-        foreach (UpgradeEntry element in upgrades)
+        foreach (UpgradeEntry element in upgradesList)
         {
             InstantiateButton(element);
         }
@@ -73,20 +79,24 @@ public class UpgradesManager : MonoBehaviour
     /// <param name="identifier">Niepowtarzalny identyfikator ulepszenia</param>
     /// <returns>bool - czy udało się kupić?</returns>
     public bool BuyUpgrade(string identifier)
+    //TODO: żeby można było kupić kilka poziomów na raz, np. max bazując na walucie
     {
         UpgradeEntry foundUpgrade = FindUpgradeSO(identifier);
         if (foundUpgrade == null)
             return false;
-        if (foundUpgrade.isBought)
+        Debug.Log(
+            $"Buying for {foundUpgrade.upgrade.data.Cost}, while having {clickerManager.LeavesAmount}"
+        );
+        if (foundUpgrade.level >= MAX_UPGRADE_LEVEL)
             return false;
+
         if (!clickerManager.SpendCurrency(foundUpgrade.upgrade.data.Cost))
             return false;
 
-        foundUpgrade.isBought = true;
-        boughtUpgrades.Add(foundUpgrade.upgrade);
+        foundUpgrade.level += 1;
 
         Debug.Log(
-            $"ClickValue: {CalculateUpgradesValue(ModifierType.IncreaseClickValue, BASE_CLICK_VALUE)}"
+            $"NewClickValue: {CalculateUpgradesValue(ModifierType.IncreaseClickValue, BASE_CLICK_VALUE)}"
         );
 
         OnUpgradeBought?.Invoke(identifier);
@@ -100,7 +110,7 @@ public class UpgradesManager : MonoBehaviour
     /// <returns>UpgradeEntry - ScriptableObject i bool isBought</returns>
     public UpgradeEntry FindUpgradeSO(string identifier)
     {
-        foreach (var element in upgrades)
+        foreach (var element in upgradesList)
         {
             if (element.upgrade.UniqueID == identifier)
                 return element;
@@ -117,11 +127,11 @@ public class UpgradesManager : MonoBehaviour
     public float CalculateUpgradesValue(ModifierType modifierType, float baseValue = 0)
     {
         float result = baseValue;
-        foreach (UpgradeSO upgrade in boughtUpgrades)
+        foreach (var upgradeListElement in upgradesList)
         {
-            Upgrade data = upgrade.data;
+            Upgrade data = upgradeListElement.upgrade.data;
             if (data.modifier.ModifierType == modifierType)
-                result += data.modifier.Amount;
+                result += data.modifier.Amount * upgradeListElement.level;
         }
         return result;
     }
@@ -131,5 +141,5 @@ public class UpgradesManager : MonoBehaviour
 public class UpgradeEntry
 {
     public UpgradeSO upgrade;
-    public bool isBought;
+    public int level = 0;
 }

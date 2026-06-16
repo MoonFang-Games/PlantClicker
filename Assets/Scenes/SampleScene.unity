@@ -599,7 +599,7 @@ GameObject:
   m_Layer: 0
   m_Name: UpgradesManager
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -630,12 +630,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ef5b72a5ea0b8e458976dea0ec865ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpgradesManager
-  upgrades:
+  upgradesList:
   - upgrade: {fileID: 11400000, guid: a8c9290acebbc844693293729939f3fc, type: 2}
-    isBought: 0
+    level: 0
   - upgrade: {fileID: 11400000, guid: 2f8008e12ad686d46b5aeaa7d214c8d0, type: 2}
-    isBought: 0
-  boughtUpgrades: []
+    level: 0
   shopUpgradesContainer: {fileID: 679040314}
   shopUpgradeElementPrefab: {fileID: 6492251365905557568, guid: 3763870b1863e85418cd0da1094d5266, type: 3}
   clickerManager: {fileID: 1317524940}

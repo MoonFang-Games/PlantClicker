@@ -31,8 +31,12 @@ public class UpgradeController : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Buying <b>{data.title}</b>...");
-        upgradesManager.BuyUpgrade(UniqueID);
+        Debug.Log($"[buttonMSG] Buying <b>{data.title}</b>...");
+        Debug.Log(
+            upgradesManager.BuyUpgrade(UniqueID)
+                ? "[buttonMSG] bought"
+                : "[buttonMSG] failed to buy"
+        );
     }
 
     /// <summary>
